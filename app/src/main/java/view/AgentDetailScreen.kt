@@ -1,7 +1,6 @@
-package com.example.valorantapp
+package view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +20,7 @@ import coil.compose.AsyncImage
 import com.example.valorantapp.ui.theme.ValorantDarkBg
 import com.example.valorantapp.ui.theme.ValorantRed
 import com.example.valorantapp.ui.theme.ValorantTextSecondary
+import model.AgentModel
 
 @Composable
 fun AgentDetailScreen(

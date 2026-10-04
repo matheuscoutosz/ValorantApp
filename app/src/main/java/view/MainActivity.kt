@@ -1,4 +1,4 @@
-package com.example.valorantapp
+package view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

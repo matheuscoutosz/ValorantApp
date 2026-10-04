@@ -1,9 +1,12 @@
-package com.example.valorantapp
+package di
 
+import model.ValorantApiService
+import model.ValorantRepository
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import viewmodel.ValorantViewModel
 
 val appModule = module {
     single {

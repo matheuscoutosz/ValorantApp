@@ -1,4 +1,6 @@
-package com.example.valorantapp
+package viewmodel
+
+import model.AgentModel
 
 sealed interface ValorantUiState {
     object Loading : ValorantUiState

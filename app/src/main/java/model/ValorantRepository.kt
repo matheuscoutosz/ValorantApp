@@ -1,4 +1,4 @@
-package com.example.valorantapp
+package model
 
 class ValorantRepository(private val apiService: ValorantApiService) {
     suspend fun getAgents(): List<AgentModel> {

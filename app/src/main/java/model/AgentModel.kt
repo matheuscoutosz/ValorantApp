@@ -1,4 +1,4 @@
-package com.example.valorantapp
+package model
 
 data class ValorantResponse(
     val data: List<AgentModel>

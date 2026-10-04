@@ -1,4 +1,4 @@
-package com.example.valorantapp
+package view
 
 import androidx.activity.compose.BackHandler // Importante!
 import androidx.compose.foundation.background
@@ -20,9 +20,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import viewmodel.ValorantUiState
+import viewmodel.ValorantViewModel
 import com.example.valorantapp.ui.theme.ValorantDarkBg
 import com.example.valorantapp.ui.theme.ValorantRed
 import com.example.valorantapp.ui.theme.ValorantTextSecondary
+import model.AgentModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
