@@ -1,4 +1,4 @@
-package view
+package com.example.valorantapp.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,7 +20,7 @@ import coil.compose.AsyncImage
 import com.example.valorantapp.ui.theme.ValorantDarkBg
 import com.example.valorantapp.ui.theme.ValorantRed
 import com.example.valorantapp.ui.theme.ValorantTextSecondary
-import model.AgentModel
+import com.example.valorantapp.model.AgentModel
 
 @Composable
 fun AgentDetailScreen(

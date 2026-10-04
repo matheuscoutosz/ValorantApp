@@ -1,4 +1,4 @@
-package viewmodel
+package com.example.valorantapp.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -6,8 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import model.AgentModel
-import model.ValorantRepository
+import com.example.valorantapp.model.AgentModel
+import com.example.valorantapp.model.ValorantRepository
 
 class ValorantViewModel(
     private val repository: ValorantRepository

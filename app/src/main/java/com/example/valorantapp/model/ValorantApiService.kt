@@ -1,4 +1,4 @@
-package model
+package com.example.valorantapp.model
 
 import retrofit2.http.GET
 
