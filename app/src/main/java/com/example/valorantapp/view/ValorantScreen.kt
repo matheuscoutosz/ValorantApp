@@ -1,6 +1,6 @@
 package com.example.valorantapp.view
 
-import androidx.activity.compose.BackHandler // Importante!
+import androidx.activity.compose.BackHandler // Importante para interceptar o botão físico de voltar do Android
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil.compose.AsyncImage // Biblioteca Coil para carregar imagens da internet via URL
 import com.example.valorantapp.viewmodel.ValorantUiState
 import com.example.valorantapp.viewmodel.ValorantViewModel
 import com.example.valorantapp.ui.theme.ValorantDarkBg
@@ -28,16 +28,18 @@ import com.example.valorantapp.ui.theme.ValorantTextSecondary
 import com.example.valorantapp.model.AgentModel
 import org.koin.androidx.compose.koinViewModel
 
+// Função composable principal que desenha a tela de listagem e gere os estados do app
 @Composable
-fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
-    val selectedAgent = viewModel.selectedAgent
+fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) { // Injeta o ViewModel automaticamente usando o Koin
+    val selectedAgent = viewModel.selectedAgent // Observa se há algum agente selecionado para ver detalhes
 
     // INTERCEPTA O BOTÃO DE VOLTAR DO ANDROID
-    // Se houver um agente selecionado, o botão de voltar limpa a seleção em vez de fechar o app
+    // Se houver um agente selecionado, o botão de voltar limpa a seleção (volta pra lista) em vez de fechar o app
     BackHandler(enabled = selectedAgent != null) {
         viewModel.selectAgent(null)
     }
 
+    // Se o usuário clicou em algum agente, exibe a tela de detalhes e interrompe a renderização desta tela
     if (selectedAgent != null) {
         AgentDetailScreen(
             agent = selectedAgent,
@@ -46,14 +48,15 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
         return
     }
 
+    // Estrutura principal da tela em Coluna (Layout vertical)
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(ValorantDarkBg)
-            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .background(ValorantDarkBg) // Cor de fundo personalizada do tema
+            .windowInsetsPadding(WindowInsets.safeDrawing) // Respeita as bordas/entalhes do telemóvel (status bar/notch)
             .padding(horizontal = 10.dp, vertical = 8.dp)
     ) {
-        // Cabeçalho
+        // Cabeçalho da Tela
         Text(
             text = "AGENTES VALORANT",
             fontSize = 22.sp,
@@ -62,10 +65,10 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
-        // Barra de Pesquisa
+        // Barra de Pesquisa (Campo de texto reativo)
         OutlinedTextField(
-            value = viewModel.searchQuery,
-            onValueChange = { viewModel.onSearchQueryChange(it) },
+            value = viewModel.searchQuery, // O texto exibido é o que está guardado no ViewModel
+            onValueChange = { viewModel.onSearchQueryChange(it) }, // Quando o usuário digita, avisa o ViewModel para filtrar
             label = { Text("Pesquisar...", color = ValorantTextSecondary) },
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
@@ -81,7 +84,10 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // ESTRUTURA REATIVA DE ESTADOS (Usa o padrão 'when' para olhar o uiState do ViewModel)
         when (val state = viewModel.uiState) {
+
+            // ESTADO 1: Carregando (Mostra o indicador de progresso no centro)
             is ValorantUiState.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -91,6 +97,7 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
                 }
             }
 
+            // ESTADO 2: Erro (Mostra a mensagem de falha e um botão para tentar de novo)
             is ValorantUiState.Error -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -100,7 +107,7 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
                     Text(text = state.message, color = Color.White)
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(
-                        onClick = { viewModel.loadAgents() },
+                        onClick = { viewModel.loadAgents() }, // Tenta recarregar os dados da API
                         colors = ButtonDefaults.buttonColors(containerColor = ValorantRed)
                     ) {
                         Text("Tentar Novamente", color = Color.White)
@@ -108,7 +115,9 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
                 }
             }
 
+            // ESTADO 3: Sucesso (Exibe a grelha com os agentes carregados ou filtrados)
             is ValorantUiState.Success -> {
+                // Grelha vertical otimizada (Lazy Grid) com 3 colunas fixas
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -117,9 +126,10 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(
-                        items = state.agents,
-                        key = { agent -> agent.uuid }
+                        items = state.agents, // Lista de agentes que veio do estado Success
+                        key = { agent -> agent.uuid } // Identificador único para otimizar a renderização
                     ) { agent: AgentModel ->
+                        // Cartão individual de cada agente
                         Card(
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surface
@@ -128,7 +138,7 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { viewModel.selectAgent(agent) }
+                                .clickable { viewModel.selectAgent(agent) } // Ao clicar, seleciona o agente para ver detalhes
                         ) {
                             Column(
                                 modifier = Modifier
@@ -136,17 +146,19 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
                                     .padding(6.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                // O COIL EM AÇÃO: Baixa e exibe a imagem do agente através da URL (`agent.displayIcon`)
                                 AsyncImage(
                                     model = agent.displayIcon,
                                     contentDescription = agent.displayName,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
                                         .size(85.dp)
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .clip(RoundedCornerShape(8.dp)) // Arredonda os cantos da foto
                                 )
 
                                 Spacer(modifier = Modifier.height(6.dp))
 
+                                // Nome do Agente em letras maiúsculas
                                 Text(
                                     text = agent.displayName.uppercase(),
                                     fontWeight = FontWeight.Bold,
@@ -156,6 +168,7 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
                                     maxLines = 1
                                 )
 
+                                // Função ou Classe do Agente (Ex: Duelista, Iniciador) se existir
                                 agent.role?.let { role ->
                                     Text(
                                         text = role.displayName,
@@ -163,12 +176,7 @@ fun ValorantScreen(viewModel: ValorantViewModel = koinViewModel()) {
                                         fontWeight = FontWeight.Medium,
                                         color = ValorantRed,
                                         textAlign = TextAlign.Center,
-                                        git init
-                                                git add .
-                                                git commit -m "feat: Projeto Valorant Hub finalizado"
-                                                git branch -M main
-                                                git remote add origin https://github.com/matheuscoutosz/Valorant-Hub.git
-                                        git push -u origin main                                    maxLines = 1
+                                        maxLines = 1
                                     )
                                 }
                             }

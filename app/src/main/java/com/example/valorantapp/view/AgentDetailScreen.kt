@@ -22,11 +22,13 @@ import com.example.valorantapp.ui.theme.ValorantRed
 import com.example.valorantapp.ui.theme.ValorantTextSecondary
 import com.example.valorantapp.model.AgentModel
 
+// Função Composable responsável por exibir o ecrã de detalhes de um agente específico
 @Composable
 fun AgentDetailScreen(
-    agent: AgentModel,
-    onBackClick: () -> Unit
+    agent: AgentModel,           // Recebe o objeto do agente selecionado vindo da lista principal
+    onBackClick: () -> Unit      // Função de callback para lidar com a ação de voltar ao ecrã anterior
 ) {
+    // Contentor principal em Coluna com fundo escuro e margens seguras
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,11 +36,11 @@ fun AgentDetailScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing)
             .padding(14.dp)
     ) {
-        // Botão de Voltar
+        // BOTÃO DE VOLTAR PERSONALIZADO
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .clickable { onBackClick() }
+                .clickable { onBackClick() } // Ao clicar, executa a função que limpa a seleção
                 .padding(vertical = 8.dp)
         ) {
             Text(
@@ -49,16 +51,18 @@ fun AgentDetailScreen(
             )
         }
 
+        // LISTA VERTICAL ROLÁVEL (LazyColumn) para agrupar imagem, biografia e habilidades
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Imagem e Nome do Agente
+            // SEÇÃO 1: Imagem, Nome e Classe do Agente
             item {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    // Caixa de fundo para a imagem de corpo inteiro do agente
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -67,6 +71,7 @@ fun AgentDetailScreen(
                             .background(Color(0xFF16202A)),
                         contentAlignment = Alignment.Center
                     ) {
+                        // COIL EM AÇÃO: Carrega o retrato completo se existir, senão usa o ícone normal da API
                         AsyncImage(
                             model = agent.fullPortrait ?: agent.displayIcon,
                             contentDescription = agent.displayName,
@@ -77,6 +82,7 @@ fun AgentDetailScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    // Nome do Agente em destaque maiúsculo
                     Text(
                         text = agent.displayName.uppercase(),
                         fontSize = 26.sp,
@@ -84,6 +90,7 @@ fun AgentDetailScreen(
                         color = Color.White
                     )
 
+                    // Classe do Agente (Ex: Duelista, Iniciador) se estiver disponível
                     agent.role?.let { role ->
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -96,7 +103,7 @@ fun AgentDetailScreen(
                 }
             }
 
-            // Descrição/História Oficial
+            // SEÇÃO 2: Biografia/História Oficial do Agente
             item {
                 agent.description?.let { desc ->
                     Card(
@@ -122,7 +129,7 @@ fun AgentDetailScreen(
                 }
             }
 
-            // Título Habilidades
+            // Título da Seção de Habilidades
             item {
                 Text(
                     text = "HABILIDADES",
@@ -132,7 +139,7 @@ fun AgentDetailScreen(
                 )
             }
 
-            // Lista de Habilidades
+            // SEÇÃO 3: Lista Dinâmica de Habilidades (Percorre a lista 'abilities' do agente)
             agent.abilities?.let { abilities ->
                 items(abilities) { ability ->
                     Card(
@@ -144,6 +151,7 @@ fun AgentDetailScreen(
                             modifier = Modifier.padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Ícone pequeno da habilidade carregado via Coil, se disponível
                             ability.displayIcon?.let { iconUrl ->
                                 AsyncImage(
                                     model = iconUrl,
@@ -153,6 +161,7 @@ fun AgentDetailScreen(
                                         .padding(end = 12.dp)
                                 )
                             }
+                            // Nome e descrição detalhada de cada habilidade
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = ability.displayName.uppercase(),
